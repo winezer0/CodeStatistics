@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"encoding/csv"
@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// generateCSVReport 生成CSV报告
-func (cs *CodeStatistics) generateCSVReport(outputPath string) error {
+// GenerateCSVReport 生成CSV报告
+func (cs *CodeStatistics) GenerateCSVReport(outputPath string) error {
 	file, err := os.Create(outputPath)
 	if err != nil {
 		return err
@@ -183,8 +183,8 @@ func calculateCodeRatio(codeLines, totalLines int) float64 {
 	return float64(codeLines) / float64(totalLines) * 100
 }
 
-// printSummary 打印统计摘要
-func (cs *CodeStatistics) printSummary() {
+// PrintSummary 打印统计摘要
+func (cs *CodeStatistics) PrintSummary() {
 	cs.printHeader()
 	cs.printTableHeader()
 

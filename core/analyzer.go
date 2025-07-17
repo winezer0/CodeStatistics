@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"bufio"
@@ -89,8 +89,8 @@ func shouldSkipDirectory(dirName string) bool {
 	return false
 }
 
-// scanDirectory 扫描目录
-func (cs *CodeStatistics) scanDirectory() error {
+// ScanDirectory 扫描目录
+func (cs *CodeStatistics) ScanDirectory() error {
 	return filepath.Walk(cs.RootPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -134,8 +134,8 @@ func (cs *CodeStatistics) analyzeBlacklistFile(filename string) error {
 	return nil
 }
 
-// calculateFileRatios 计算文件类型占比
-func (cs *CodeStatistics) calculateFileRatios() {
+// CalculateFileRatios 计算文件类型占比
+func (cs *CodeStatistics) CalculateFileRatios() {
 	if cs.TotalFiles == 0 {
 		return
 	}

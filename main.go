@@ -1,11 +1,21 @@
 package main
 
 import (
+	"CodeStatistics/core"
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/jessevdk/go-flags"
 )
+
+// Options 命令行选项
+type Options struct {
+	Path           string `short:"p" long:"path" description:"要扫描的代码目录路径" default:"."`
+	Output         string `short:"o" long:"output" description:"输出CSV文件路径" default:"code_stats.csv"`
+	EnableComments bool   `short:"c" long:"comments" description:"启用注释行判断功能"`
+	Help           bool   `short:"h" long:"help" description:"显示帮助信息"`
+}
 
 func main() {
 	var opts Options
@@ -15,17 +25,13 @@ func main() {
 
 	// 自定义帮助信息
 	parser.LongDescription = `代码行数统计工具
-
-这个工具可以扫描指定目录下的所有代码文件，统计各种文件类型的行数信息，
-包括总行数、代码行数、空行数、注释行数等，并生成详细的CSV报告。
-
-示例:
   ./CodeStatistics -p ./src -o stats.csv
   ./CodeStatistics --path /home/user/project --output report.csv`
 
 	_, err := parser.Parse()
 	if err != nil {
-		if flagsErr, ok := err.(*flags.Error); ok && flagsErr.Type == flags.ErrHelp {
+		var flagsErr *flags.Error
+		if errors.As(err, &flagsErr) && errors.Is(flagsErr.Type, flags.ErrHelp) {
 			return
 		}
 		fmt.Fprintf(os.Stderr, "参数解析错误: %v\n", err)
@@ -46,23 +52,23 @@ func runStatistics(opts *Options) error {
 	}
 
 	// 创建统计器
-	stats := NewCodeStatistics(opts.Path, opts.EnableComments)
+	stats := core.NewCodeStatistics(opts.Path, opts.EnableComments)
 
 	fmt.Printf("开始扫描目录: %s\n", opts.Path)
 
 	// 扫描目录
-	if err := stats.scanDirectory(); err != nil {
+	if err := stats.ScanDirectory(); err != nil {
 		return fmt.Errorf("扫描目录时出错: %v", err)
 	}
 
 	// 计算文件类型占比
-	stats.calculateFileRatios()
+	stats.CalculateFileRatios()
 
 	// 打印统计摘要
-	stats.printSummary()
+	stats.PrintSummary()
 
 	// 生成CSV报告
-	if err := stats.generateCSVReport(opts.Output); err != nil {
+	if err := stats.GenerateCSVReport(opts.Output); err != nil {
 		return fmt.Errorf("生成CSV报告时出错: %v", err)
 	}
 

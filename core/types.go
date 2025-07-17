@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"time"
@@ -24,14 +24,6 @@ type CodeStatistics struct {
 	Blacklist      map[string]bool
 	EnableComments bool // 是否启用注释行判断
 	StartTime      time.Time
-}
-
-// Options 命令行选项
-type Options struct {
-	Path           string `short:"p" long:"path" description:"要扫描的代码目录路径" default:"."`
-	Output         string `short:"o" long:"output" description:"输出CSV文件路径" default:"code_statistics.csv"`
-	EnableComments bool   `short:"c" long:"comments" description:"启用注释行判断功能"`
-	Help           bool   `short:"h" long:"help" description:"显示帮助信息"`
 }
 
 // SummaryData 统计摘要数据
