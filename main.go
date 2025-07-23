@@ -43,8 +43,7 @@ func main() {
 	// Custom help information
 	parser.LongDescription = `Code line count tool`
 
-	_, err := parser.Parse()
-	if err != nil {
+	if _, err := parser.Parse(); err != nil {
 		var flagsErr *flags.Error
 		if errors.As(err, &flagsErr) && errors.Is(flagsErr.Type, flags.ErrHelp) {
 			return

@@ -21,3 +21,19 @@ func BuildAddOrCoverMap(defaultList, addList, coverList []string) map[string]boo
 
 	return result
 }
+
+func BuildAddOrCoverList(defaultList, addList, coverList []string) []string {
+	// 构建黑名单映射
+	var result []string
+	if len(coverList) > 0 {
+		// 使用覆盖配置
+		result = append([]string{}, coverList...)
+	} else {
+		// 使用默认配置并添加用户扩展
+		result = append([]string{}, defaultList...)
+		if len(addList) > 0 {
+			result = append(result, addList...)
+		}
+	}
+	return result
+}
