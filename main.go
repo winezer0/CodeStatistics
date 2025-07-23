@@ -1,66 +1,14 @@
 package main
 
 import (
-	"CodeStatistics/logging"
+	"CodeStatistics/pkg/cmdutils"
+	"CodeStatistics/pkg/logging"
 	"CodeStatistics/statistics"
 	"errors"
 	"fmt"
-	"os"
-	"strings"
-
 	"github.com/jessevdk/go-flags"
+	"os"
 )
-
-// parseExtensionList parses comma-separated extension list
-func parseExtensionList(extensionStr string) []string {
-	if extensionStr == "" {
-		return nil
-	}
-
-	extensions := strings.Split(extensionStr, ",")
-	var result []string
-
-	for _, ext := range extensions {
-		ext = strings.TrimSpace(ext)
-		if ext == "" {
-			continue
-		}
-
-		// Ensure extension starts with dot
-		if !strings.HasPrefix(ext, ".") {
-			ext = "." + ext
-		}
-
-		// Convert to lowercase
-		ext = strings.ToLower(ext)
-		result = append(result, ext)
-	}
-
-	return result
-}
-
-// parseDirectoryList parses comma-separated directory list
-func parseDirectoryList(dirStr string) []string {
-	if dirStr == "" {
-		return nil
-	}
-
-	directories := strings.Split(dirStr, ",")
-	var result []string
-
-	for _, dir := range directories {
-		dir = strings.TrimSpace(dir)
-		if dir == "" {
-			continue
-		}
-
-		// Convert to lowercase for consistency
-		dir = strings.ToLower(dir)
-		result = append(result, dir)
-	}
-
-	return result
-}
 
 // Options command line options
 type Options struct {
@@ -133,8 +81,8 @@ func main() {
 	var whitelistConfig *statistics.WhitelistConfig
 	if opts.WhiteAdd != "" || opts.WhiteCover != "" {
 		whitelistConfig = &statistics.WhitelistConfig{
-			Add:      parseExtensionList(opts.WhiteAdd),
-			Override: parseExtensionList(opts.WhiteCover),
+			Add:      cmdutils.ParseExtensionList(opts.WhiteAdd),
+			Override: cmdutils.ParseExtensionList(opts.WhiteCover),
 		}
 	}
 
@@ -142,8 +90,8 @@ func main() {
 	var blacklistConfig *statistics.BlacklistConfig
 	if opts.BlackAdd != "" || opts.BlackCover != "" {
 		blacklistConfig = &statistics.BlacklistConfig{
-			Add:      parseExtensionList(opts.BlackAdd),
-			Override: parseExtensionList(opts.BlackCover),
+			Add:      cmdutils.ParseExtensionList(opts.BlackAdd),
+			Override: cmdutils.ParseExtensionList(opts.BlackCover),
 		}
 	}
 
@@ -151,8 +99,8 @@ func main() {
 	var blackDirConfig *statistics.BlackDirConfig
 	if opts.BDirAdd != "" || opts.BDirCover != "" {
 		blackDirConfig = &statistics.BlackDirConfig{
-			Add:      parseDirectoryList(opts.BDirAdd),
-			Override: parseDirectoryList(opts.BDirCover),
+			Add:      cmdutils.ParseCommaStrToList(opts.BDirAdd),
+			Override: cmdutils.ParseCommaStrToList(opts.BDirCover),
 		}
 	}
 

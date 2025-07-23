@@ -57,7 +57,7 @@ type BlackDirConfig struct {
 	Override []string // Directories to override blacklist
 }
 
-// 默认白名单 - 明确的代码文件扩展名
+// DefaultWhitelist 默认白名单 - 明确的代码文件扩展名
 var DefaultWhitelist = []string{
 	// 编程语言
 	".go", ".java", ".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx",
@@ -103,7 +103,7 @@ var DefaultWhitelist = []string{
 
 }
 
-// 默认黑名单 - 排除非代码文件
+// DefaultBlacklist 默认黑名单 - 排除非代码文件
 var DefaultBlacklist = []string{
 	// 数据库
 	".sql", ".mysql", ".pgsql", ".sqlite", ".plsql", // SQL
@@ -165,7 +165,7 @@ var DefaultBlacklist = []string{
 	"NONE", "", //无后缀文件
 }
 
-// 需要跳过的目录
+// DefaultBlackDirs 需要跳过的目录
 var DefaultBlackDirs = []string{
 	".git", "node_modules", "vendor", ".svn", ".hg", "target", "build", "dist", ".idea", ".vscode",
 }

@@ -1,108 +1,125 @@
-# 代码行数统计工具
+# CodeStatistics
 
-一个用Go语言编写的代码行数统计工具，可以扫描指定目录下的所有代码文件，统计各种文件类型的行数信息。
+CodeStatistics 是一个强大的代码统计工具，用于分析项目中的代码文件并生成详细的统计报告。
 
-## 功能特性
+## 功能特点
 
-1. **指定代码文件夹路径** - 支持扫描任意指定的目录
-2. **自动统计文件类型和数量** - 自动识别并统计所有文件类型
-3. **代码行数统计** - 统计总行数、代码行数、空行数、注释行数
-4. **文件类型占比** - 计算每种文件类型在项目中的占比
-5. **黑名单模式** - 自动排除非代码文件（图片、音视频、压缩包等）
-6. **CSV报告输出** - 生成详细的CSV格式统计报告
+- **代码行数统计**：统计项目中的总行数、代码行数、注释行数和空行数
+- **文件类型分析**：区分不同类型的文件（基于文件扩展名）
+- **灵活的过滤机制**：支持白名单和黑名单机制，可以指定要包含或排除的文件类型和目录
+- **报告生成**：可以生成CSV格式的统计报告
 
-## 项目结构
+## 安装
 
-- `main.go` - 主程序入口和命令行处理
-- `types.go` - 数据结构定义
-- `config.go` - 配置信息和黑名单设置
-- `analyzer.go` - 文件分析和目录扫描逻辑
-- `reporter.go` - 报告生成和输出格式化
+```bash
+# 克隆仓库
+git clone https://github.com/WINDOWS/CodeStatistics.git
+
+# 进入项目目录
+cd CodeStatistics
+
+# 构建项目
+go build
+```
 
 ## 使用方法
 
-### 编译程序
 ```bash
-go build .
+# 基本用法
+./CodeStatistics --path /path/to/your/code
+
+# 生成CSV报告
+./CodeStatistics --path /path/to/your/code --output report.csv
+
+# 启用注释行检测
+./CodeStatistics --path /path/to/your/code --comments
 ```
 
-### 运行程序
+## 命令行选项
 
-#### 基本用法
+| 选项 | 简写 | 描述 |
+|------|------|------|
+| `--path` | `-p` | 要扫描的代码目录路径 |
+| `--output` | `-o` | 输出CSV文件路径 |
+| `--comments` | `-c` | 启用注释行检测 |
+| `--white-add` | `-w` | 添加扩展名到内置白名单，逗号分隔 (例如: .ext1,.ext2) |
+| `--white-cover` | `-W` | 使用扩展名列表覆盖内置白名单，逗号分隔 |
+| `--black-add` | `-b` | 添加扩展名到内置黑名单，逗号分隔 |
+| `--black-cover` | `-B` | 使用扩展名列表覆盖内置黑名单，逗号分隔 |
+| `--only-white` | `-O` | 仅显示白名单文件，跳过黑名单和未知文件分析 |
+| `--bdir-add` | `-d` | 添加目录到内置黑名单目录，逗号分隔 (例如: dir1,dir2) |
+| `--bdir-cover` | `-D` | 使用目录列表覆盖内置黑名单目录，逗号分隔 |
+| `--show-builtin` | `-s` | 显示内置默认白名单/黑名单/黑名单目录 |
+| `--lf` |  | 日志文件路径 |
+| `--ll` |  | 日志级别 (debug/info/warn/error) |
+| `--cf` |  | 控制台日志格式 (T L C M F 组合或 off\|null 禁用) |
+
+## 白名单和黑名单
+
+### 默认白名单（代码文件）
+
+工具内置了常见的代码文件扩展名白名单，包括：
+- 编程语言文件：.go, .java, .c, .cpp, .py, .js, .ts 等
+- 模板语言文件：.vue, .svelte, .jsx, .tsx 等
+- 前端语言文件：.html, .htm 等
+- 脚本语言文件：.sh, .bash, .bat, .cmd 等
+
+### 默认黑名单（非代码文件）
+
+工具内置了常见的非代码文件扩展名黑名单，包括：
+- 数据库文件：.sql, .mysql 等
+- 标记和配置语言文件：.xml, .css, .json, .yaml 等
+- 构建和配置文件：.mk, .cmake 等
+- 文档文件：.md, .rst, .tex 等
+- 图片文件：.jpg, .png, .gif 等
+- 音视频文件：.mp3, .mp4, .avi 等
+- 压缩文件：.zip, .rar, .7z 等
+
+### 默认跳过目录
+
+工具默认会跳过以下目录：
+`.git`, `node_modules`, `vendor`, `.svn`, `.hg`, `target`, `build`, `dist`, `.idea`, `.vscode`
+
+## 示例
+
+### 基本分析
+
 ```bash
-# 扫描当前目录
-./CodeStatistics
-
-# 扫描指定目录
-./CodeStatistics -p /path/to/your/project
-
-# 指定输出文件
-./CodeStatistics -p /path/to/your/project -o report.csv
+./CodeStatistics --path ./myproject
 ```
 
-#### 命令行参数
-- `-p, --path` : 要扫描的代码目录路径 (默认: 当前目录)
-- `-o, --output` : 输出CSV文件路径 (默认: code_statistics.csv)
-- `-h, --help` : 显示帮助信息
+### 生成CSV报告
 
-#### 示例
 ```bash
-# Windows
-./CodeStatistics.exe -p "C:\Users\YourName\Projects\MyProject" -o "C:\Reports\stats.csv"
-
-# Linux/Mac
-./CodeStatistics -p ~/projects/myproject -o ~/reports/stats.csv
+./CodeStatistics --path ./myproject --output stats.csv
 ```
 
-## 输出格式
+### 自定义白名单
 
-### 控制台输出
-程序会在控制台显示格式化的统计表格，包含：
-- 文件类型
-- 文件数量和占比
-- 总行数、代码行数、空行数、注释行数
-- 代码占比
+```bash
+./CodeStatistics --path ./myproject --white-add .custom,.special
+```
 
-### CSV报告
-生成的CSV文件包含以下列：
-- 文件类型
-- 文件数量
-- 文件占比(%)
-- 总行数
-- 代码行数
-- 空行数
-- 注释行数
-- 代码占比(%)
+### 自定义黑名单目录
 
-## 支持的文件类型
+```bash
+./CodeStatistics --path ./myproject --bdir-add cache,temp
+```
 
-工具支持识别多种编程语言的注释格式：
-- Go, JavaScript, TypeScript, Java, C/C++, C#, PHP, Swift, Kotlin
-- Python, Shell, Ruby, Perl, YAML
-- HTML, XML, Vue
-- CSS, SCSS, SASS
-- SQL
+## 输出示例
 
-## 黑名单文件类型
+```
+代码统计摘要:
+总文件数: 120
+总行数: 15000
+代码行数: 10000 (66.7%)
+空行数: 3000 (20.0%)
+注释行数: 2000 (13.3%)
 
-自动排除以下类型的文件：
-- 图片文件: .jpg, .png, .gif, .svg 等
-- 音视频文件: .mp3, .mp4, .avi 等
-- 压缩文件: .zip, .rar, .7z 等
-- 文档文件: .pdf, .doc, .xls 等
-- 二进制文件和临时文件
-
-## 跳过的目录
-
-自动跳过以下目录：
-- .git, .svn, .hg (版本控制)
-- node_modules, vendor (依赖包)
-- target, build, dist (构建输出)
-- .idea, .vscode (IDE配置)
-
-## 技术实现
-
-- 使用结构化设计模式，每个文件不超过300行
-- 使用go-flags库处理命令行参数
-- 支持跨平台运行 (Windows, Linux, macOS)
-- 高效的文件遍历和内容分析
+文件类型分布:
+.go: 50 文件, 5000 行 (33.3%)
+.js: 30 文件, 4000 行 (26.7%)
+.html: 20 文件, 3000 行 (20.0%)
+.css: 15 文件, 2000 行 (13.3%)
+其他: 5 文件, 1000 行 (6.7%)
+```

@@ -1,7 +1,7 @@
 package statistics
 
 import (
-	"CodeStatistics/logging"
+	"CodeStatistics/pkg/logging"
 	"fmt"
 	"strings"
 	"time"

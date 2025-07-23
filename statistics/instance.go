@@ -1,6 +1,7 @@
 package statistics
 
 import (
+	"CodeStatistics/pkg/cmdutils"
 	"time"
 )
 
@@ -9,17 +10,17 @@ func NewCodeStatistics(rootPath string, enableComments bool, whitelistOnly bool,
 	// 构建白名单映射
 	var whitelist map[string]bool
 	if whitelistConfig != nil {
-		whitelist = buildAddOrCoverMap(DefaultWhitelist, whitelistConfig.Add, whitelistConfig.Override)
+		whitelist = cmdutils.BuildAddOrCoverMap(DefaultWhitelist, whitelistConfig.Add, whitelistConfig.Override)
 	} else {
-		whitelist = buildAddOrCoverMap(DefaultWhitelist, nil, nil)
+		whitelist = cmdutils.BuildAddOrCoverMap(DefaultWhitelist, nil, nil)
 	}
 
 	// 构建黑名单映射
 	var blacklist map[string]bool
 	if blacklistConfig != nil {
-		blacklist = buildAddOrCoverMap(DefaultBlacklist, blacklistConfig.Add, blacklistConfig.Override)
+		blacklist = cmdutils.BuildAddOrCoverMap(DefaultBlacklist, blacklistConfig.Add, blacklistConfig.Override)
 	} else {
-		blacklist = buildAddOrCoverMap(DefaultBlacklist, nil, nil)
+		blacklist = cmdutils.BuildAddOrCoverMap(DefaultBlacklist, nil, nil)
 	}
 
 	// 构建目录黑名单
@@ -50,26 +51,4 @@ func NewCodeStatistics(rootPath string, enableComments bool, whitelistOnly bool,
 		OnlyWhite:       whitelistOnly,
 		StartTime:       time.Now(),
 	}
-}
-
-// 构建映射表（用于白名单或黑名单）
-func buildAddOrCoverMap(defaultList, addList, overrideList []string) map[string]bool {
-	result := make(map[string]bool)
-
-	// 如果有覆盖配置，优先使用覆盖配置
-	if len(overrideList) > 0 {
-		for _, ext := range overrideList {
-			result[ext] = true
-		}
-	} else {
-		// 否则使用默认 + 追加
-		for _, ext := range defaultList {
-			result[ext] = true
-		}
-		for _, ext := range addList {
-			result[ext] = true
-		}
-	}
-
-	return result
 }
