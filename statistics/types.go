@@ -55,20 +55,20 @@ type SummaryData struct {
 
 // WhitelistConfig 后缀白名单配置
 type WhitelistConfig struct {
-	Add      []string // Extensions to add to whitelist
-	Override []string // Extensions to override whitelist
+	Added []string // Extensions to add to whitelist
+	Cover []string // Extensions to override whitelist
 }
 
 // BlacklistConfig 后缀黑名单配置
 type BlacklistConfig struct {
-	Add      []string // Extensions to add to blacklist
-	Override []string // Extensions to override blacklist
+	Added []string // Extensions to add to blacklist
+	Cover []string // Extensions to override blacklist
 }
 
 // BlackDirsConfig 目录黑名单配置
 type BlackDirsConfig struct {
-	Add      []string // Directories to add to blacklist
-	Override []string // Directories to override blacklist
+	Added []string // Directories to add to blacklist
+	Cover []string // Directories to override blacklist
 }
 
 // DefaultWhitelist 默认白名单 - 明确的代码文件扩展名

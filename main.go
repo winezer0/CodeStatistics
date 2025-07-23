@@ -105,25 +105,25 @@ func InitCodeStatistics(opts *Options) *statistics.CodeStatistics {
 	// 构建白名单映射
 	// Parse whitelist configuration
 	whitelistConfig := &statistics.WhitelistConfig{
-		Add:      cmdutils.ParseExtensionList(opts.WhiteAdd, true),
-		Override: cmdutils.ParseExtensionList(opts.WhiteCover, true),
+		Added: cmdutils.ParseExtensionList(opts.WhiteAdd, true),
+		Cover: cmdutils.ParseExtensionList(opts.WhiteCover, true),
 	}
-	whitelist := cmdutils.BuildAddOrCoverMap(statistics.DefaultWhitelist, whitelistConfig.Add, whitelistConfig.Override)
+	whitelist := cmdutils.BuildAddOrCoverMap(statistics.DefaultWhitelist, whitelistConfig.Added, whitelistConfig.Cover)
 
 	// 构建黑名单映射
 	blacklistConfig := &statistics.BlacklistConfig{
-		Add:      cmdutils.ParseExtensionList(opts.BlackAdd, true),
-		Override: cmdutils.ParseExtensionList(opts.BlackCover, true),
+		Added: cmdutils.ParseExtensionList(opts.BlackAdd, true),
+		Cover: cmdutils.ParseExtensionList(opts.BlackCover, true),
 	}
-	blacklist := cmdutils.BuildAddOrCoverMap(statistics.DefaultBlacklist, blacklistConfig.Add, blacklistConfig.Override)
+	blacklist := cmdutils.BuildAddOrCoverMap(statistics.DefaultBlacklist, blacklistConfig.Added, blacklistConfig.Cover)
 
 	// 构建目录黑名单
 	// Parse directory blacklist configuration
 	blackDirsConfig := &statistics.BlackDirsConfig{
-		Add:      cmdutils.ParseCommaStrToList(opts.DirsAdd, true),
-		Override: cmdutils.ParseCommaStrToList(opts.DirsCover, true),
+		Added: cmdutils.ParseCommaStrToList(opts.DirsAdd, true),
+		Cover: cmdutils.ParseCommaStrToList(opts.DirsCover, true),
 	}
-	blackDirs := cmdutils.BuildAddOrCoverList(statistics.DefaultBlackDirs, blackDirsConfig.Add, blackDirsConfig.Override)
+	blackDirs := cmdutils.BuildAddOrCoverList(statistics.DefaultBlackDirs, blackDirsConfig.Added, blackDirsConfig.Cover)
 
 	return statistics.NewCodeStatistics(opts.Path, opts.Comments, opts.OnlyWhite, whitelist, blacklist, blackDirs)
 }
