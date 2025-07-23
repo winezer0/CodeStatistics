@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"os"
+	"time"
 )
 
 // Options command line options
@@ -76,35 +77,9 @@ func main() {
 		logging.Fatalf("path does not exist: %s", opts.Path)
 	}
 
-	// Parse whitelist configuration
-	var whitelistConfig *statistics.WhitelistConfig
-	if opts.WhiteAdd != "" || opts.WhiteCover != "" {
-		whitelistConfig = &statistics.WhitelistConfig{
-			Add:      cmdutils.ParseExtensionList(opts.WhiteAdd),
-			Override: cmdutils.ParseExtensionList(opts.WhiteCover),
-		}
-	}
-
-	// Parse blacklist configuration
-	var blacklistConfig *statistics.BlacklistConfig
-	if opts.BlackAdd != "" || opts.BlackCover != "" {
-		blacklistConfig = &statistics.BlacklistConfig{
-			Add:      cmdutils.ParseExtensionList(opts.BlackAdd),
-			Override: cmdutils.ParseExtensionList(opts.BlackCover),
-		}
-	}
-
-	// Parse directory blacklist configuration
-	var blackDirConfig *statistics.BlackDirConfig
-	if opts.BDirAdd != "" || opts.BDirCover != "" {
-		blackDirConfig = &statistics.BlackDirConfig{
-			Add:      cmdutils.ParseCommaStrToList(opts.BDirAdd),
-			Override: cmdutils.ParseCommaStrToList(opts.BDirCover),
-		}
-	}
-
 	// Create statistics analyzer
-	statistical := statistics.NewCodeStatistics(opts.Path, opts.Comments, opts.OnlyWhite, whitelistConfig, blacklistConfig, blackDirConfig)
+	//statistical := NewCodeStatistics(opts.Path, opts.Comments, opts.OnlyWhite, whitelistConfig, blacklistConfig, blackDirConfig)
+	statistical := NewCodeStatistics(&opts)
 	logging.Infof("Start scanning the path: %s", opts.Path)
 
 	// Scan directory
@@ -123,5 +98,43 @@ func main() {
 		} else {
 			logging.Infof("generate csv report success: %s", opts.Output)
 		}
+	}
+}
+
+// NewCodeStatistics creates a new code statistics analyzer
+func NewCodeStatistics(opts *Options) *statistics.CodeStatistics {
+	// 构建白名单映射
+	// Parse whitelist configuration
+	whitelistConfig := &statistics.WhitelistConfig{
+		Add:      cmdutils.ParseExtensionList(opts.WhiteAdd, true),
+		Override: cmdutils.ParseExtensionList(opts.WhiteCover, true),
+	}
+	whitelist := cmdutils.BuildAddOrCoverMap(statistics.DefaultWhitelist, whitelistConfig.Add, whitelistConfig.Override)
+
+	// 构建黑名单映射
+	blacklistConfig := &statistics.BlacklistConfig{
+		Add:      cmdutils.ParseExtensionList(opts.BlackAdd, true),
+		Override: cmdutils.ParseExtensionList(opts.BlackCover, true),
+	}
+	blacklist := cmdutils.BuildAddOrCoverMap(statistics.DefaultBlacklist, blacklistConfig.Add, blacklistConfig.Override)
+
+	// 构建目录黑名单
+	// Parse directory blacklist configuration
+	blackDirConfig := &statistics.BlackDirConfig{
+		Add:      cmdutils.ParseCommaStrToList(opts.BDirAdd, true),
+		Override: cmdutils.ParseCommaStrToList(opts.BDirCover, true),
+	}
+	skipBlackDirs := cmdutils.BuildAddOrCoverList(statistics.DefaultBlackDirs, blackDirConfig.Add, blackDirConfig.Override)
+
+	return &statistics.CodeStatistics{
+		RootPath:        opts.Path,
+		WhitelistStats:  make(map[string]*statistics.FileStats),
+		BlacklistStats:  make(map[string]*statistics.FileStats),
+		Whitelist:       whitelist,
+		Blacklist:       blacklist,
+		SkipDirectories: skipBlackDirs,
+		EnableComments:  opts.Comments,
+		OnlyWhite:       opts.OnlyWhite,
+		StartTime:       time.Now(),
 	}
 }

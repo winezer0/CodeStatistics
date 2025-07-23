@@ -3,25 +3,22 @@ package cmdutils
 import "strings"
 
 // ParseCommaStrToList 解析逗号分隔字符串为列表
-func ParseCommaStrToList(str string) []string {
-	if str == "" {
-		return nil
-	}
-
-	directories := strings.Split(str, ",")
+func ParseCommaStrToList(CommaStr string, toLower bool) []string {
 	var result []string
-
-	for _, dir := range directories {
-		dir = strings.TrimSpace(dir)
-		if dir == "" {
-			continue
+	if CommaStr != "" {
+		strList := strings.Split(CommaStr, ",")
+		for _, str := range strList {
+			str = strings.TrimSpace(str)
+			if str == "" {
+				continue
+			}
+			// Convert to lowercase for consistency
+			if toLower {
+				str = strings.ToLower(str)
+			}
+			result = append(result, str)
 		}
-
-		// Convert to lowercase for consistency
-		dir = strings.ToLower(dir)
-		result = append(result, dir)
 	}
-
 	return result
 }
 
@@ -38,8 +35,8 @@ func EnsurePrefix(extList []string, prefix string) []string {
 }
 
 // ParseExtensionList 解析逗号分隔的扩展名列表
-func ParseExtensionList(extensionStr string) []string {
-	result := ParseCommaStrToList(extensionStr)
+func ParseExtensionList(extensionStr string, toLower bool) []string {
+	result := ParseCommaStrToList(extensionStr, toLower)
 	result = EnsurePrefix(result, ".")
 	return result
 }
