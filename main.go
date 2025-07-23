@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"os"
-	"time"
 )
 
 // Options command line options
@@ -23,8 +22,8 @@ type Options struct {
 	BlackAdd   string `short:"b" long:"black-add" description:"add ext list to built-in blacklist, comma separated (e.g: .ext1,.ext2)"`
 	BlackCover string `short:"B" long:"black-cover" description:"use exy list override built-in blacklist, comma separated (e.g: .ext1,.ext2)"`
 	OnlyWhite  bool   `short:"O" long:"only-white" description:"Only Show whitelist files, skip blacklist and unknown file analysis (default: false)"`
-	BDirAdd    string `short:"d" long:"bdir-add" description:"add dir list to built-in blacklist dirs, comma separated (e.g: dir1,dir2)"`
-	BDirCover  string `short:"D" long:"bdir-cover" description:"use dir list override built-in blacklist dirs, comma separated (e.g: dir1,dir2)"`
+	DirsAdd    string `short:"d" long:"dirs-add" description:"add dir list to built-in blacklist dirs, comma separated (e.g: dir1,dir2)"`
+	DirsCover  string `short:"D" long:"dirs-cover" description:"use dir list override built-in blacklist dirs, comma separated (e.g: dir1,dir2)"`
 
 	// Information display
 	ShowDefaults bool `short:"s" long:"show-builtin" description:"Show built-in default white ext/black ext/black dirs"`
@@ -78,8 +77,8 @@ func main() {
 	}
 
 	// Create statistics analyzer
-	//statistical := NewCodeStatistics(opts.Path, opts.Comments, opts.OnlyWhite, whitelistConfig, blacklistConfig, blackDirConfig)
-	statistical := NewCodeStatistics(&opts)
+	//statistical := InitCodeStatistics(opts.Path, opts.Comments, opts.OnlyWhite, whitelistConfig, blacklistConfig, blackDirConfig)
+	statistical := InitCodeStatistics(&opts)
 	logging.Infof("Start scanning the path: %s", opts.Path)
 
 	// Scan directory
@@ -101,8 +100,8 @@ func main() {
 	}
 }
 
-// NewCodeStatistics creates a new code statistics analyzer
-func NewCodeStatistics(opts *Options) *statistics.CodeStatistics {
+// InitCodeStatistics creates a new code statistics analyzer
+func InitCodeStatistics(opts *Options) *statistics.CodeStatistics {
 	// 构建白名单映射
 	// Parse whitelist configuration
 	whitelistConfig := &statistics.WhitelistConfig{
@@ -120,21 +119,11 @@ func NewCodeStatistics(opts *Options) *statistics.CodeStatistics {
 
 	// 构建目录黑名单
 	// Parse directory blacklist configuration
-	blackDirConfig := &statistics.BlackDirConfig{
-		Add:      cmdutils.ParseCommaStrToList(opts.BDirAdd, true),
-		Override: cmdutils.ParseCommaStrToList(opts.BDirCover, true),
+	blackDirsConfig := &statistics.BlackDirsConfig{
+		Add:      cmdutils.ParseCommaStrToList(opts.DirsAdd, true),
+		Override: cmdutils.ParseCommaStrToList(opts.DirsCover, true),
 	}
-	skipBlackDirs := cmdutils.BuildAddOrCoverList(statistics.DefaultBlackDirs, blackDirConfig.Add, blackDirConfig.Override)
+	blackDirs := cmdutils.BuildAddOrCoverList(statistics.DefaultBlackDirs, blackDirsConfig.Add, blackDirsConfig.Override)
 
-	return &statistics.CodeStatistics{
-		RootPath:        opts.Path,
-		WhitelistStats:  make(map[string]*statistics.FileStats),
-		BlacklistStats:  make(map[string]*statistics.FileStats),
-		Whitelist:       whitelist,
-		Blacklist:       blacklist,
-		SkipDirectories: skipBlackDirs,
-		EnableComments:  opts.Comments,
-		OnlyWhite:       opts.OnlyWhite,
-		StartTime:       time.Now(),
-	}
+	return statistics.NewCodeStatistics(opts.Path, opts.Comments, opts.OnlyWhite, whitelist, blacklist, blackDirs)
 }

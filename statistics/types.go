@@ -4,6 +4,34 @@ import (
 	"time"
 )
 
+// CodeStatistics code statistics analyzer
+type CodeStatistics struct {
+	RootPath       string
+	WhitelistStats map[string]*FileStats // Whitelist file statistics
+	BlacklistStats map[string]*FileStats // Blacklist file statistics
+	TotalFiles     int
+	Whitelist      map[string]bool // Code file whitelist
+	Blacklist      map[string]bool // Non-code file blacklist
+	BlackDirs      []string        // Directories to skip during scanning
+	EnableComments bool            // Whether to enable comment line detection
+	OnlyWhite      bool            // Whether to show only whitelist files
+	StartTime      time.Time
+}
+
+func NewCodeStatistics(rootPath string, enableComments, onlyWhite bool, whitelist map[string]bool, blacklist map[string]bool, blackDirs []string) *CodeStatistics {
+	return &CodeStatistics{
+		RootPath:       rootPath,
+		WhitelistStats: make(map[string]*FileStats),
+		BlacklistStats: make(map[string]*FileStats),
+		Whitelist:      whitelist,
+		Blacklist:      blacklist,
+		BlackDirs:      blackDirs,
+		EnableComments: enableComments,
+		OnlyWhite:      onlyWhite,
+		StartTime:      time.Now(),
+	}
+}
+
 // FileStats file statistics information
 type FileStats struct {
 	Extension    string  // File extension
@@ -13,20 +41,6 @@ type FileStats struct {
 	BlankLines   int     // Blank lines
 	CommentLines int     // Comment lines
 	FileRatio    float64 // File type ratio
-}
-
-// CodeStatistics code statistics analyzer
-type CodeStatistics struct {
-	RootPath        string
-	WhitelistStats  map[string]*FileStats // Whitelist file statistics
-	BlacklistStats  map[string]*FileStats // Blacklist file statistics
-	TotalFiles      int
-	Whitelist       map[string]bool // Code file whitelist
-	Blacklist       map[string]bool // Non-code file blacklist
-	SkipDirectories []string        // Directories to skip during scanning
-	EnableComments  bool            // Whether to enable comment line detection
-	OnlyWhite       bool            // Whether to show only whitelist files
-	StartTime       time.Time
 }
 
 // SummaryData statistics summary data
@@ -51,8 +65,8 @@ type BlacklistConfig struct {
 	Override []string // Extensions to override blacklist
 }
 
-// BlackDirConfig 目录黑名单配置
-type BlackDirConfig struct {
+// BlackDirsConfig 目录黑名单配置
+type BlackDirsConfig struct {
 	Add      []string // Directories to add to blacklist
 	Override []string // Directories to override blacklist
 }

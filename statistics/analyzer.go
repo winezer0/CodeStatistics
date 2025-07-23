@@ -50,7 +50,7 @@ func (cs *CodeStatistics) ScanDirFiles() error {
 
 		// 跳过目录
 		if info.IsDir() {
-			if isBlackDirs(info.Name(), cs.SkipDirectories) {
+			if isBlackDirs(info.Name(), cs.BlackDirs) {
 				logging.Debugf("Skip this dir: %s", path)
 				return filepath.SkipDir
 			}
